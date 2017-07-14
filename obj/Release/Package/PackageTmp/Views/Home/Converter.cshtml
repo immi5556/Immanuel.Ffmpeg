@@ -1,0 +1,65 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <script src="~/Scripts/jquery-1.10.2.js"></script>
+    <script src="~/Scripts/jquery.signalR-2.2.2.js"></script>
+    <meta name="viewport" content="width=device-width" />
+    <title>Video Converter</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+    <meta name="MobileOptimized" content="width" />
+    <meta name="description" content="Meta tags can have a larger impact on SEO and your website than you may think: find out more..." />
+    <meta name="HandheldFriendly" content="true" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="keywords" content="meta tags, meta tag, meta tags seo, meta tags definition, what is a meta tag" />
+</head>
+<body>
+    <div> 
+        @*<form method="post" action="/api/File/ConvertToVids" enctype="multipart/form-data">*@
+            <input type="file" name="srcfile" id="fileUpload" />
+            <select name="tofmt" id="tofmt">
+                <option value="mp4">MP4</option>
+                <option value="avi">AVI</option>
+                <option value="wmv">WMV</option>
+            </select>
+            <input type="submit" value="Convert" id="btnUpload" />
+            <img src="~/Content/load_1.jpg" width="50" height="50" />
+            <a id="rere" href="">link</a>
+        @*</form>*@
+    </div>
+    <script>
+        $(document).ready(function () {
+
+            $('#btnUpload').on('click', function () {
+
+                var data = new FormData();
+
+                var files = $("#fileUpload").get(0).files;
+                data.append("tofmt", $("#tofmt").val());
+                // Add the uploaded image content to the form data collection
+                if (files.length > 0) {
+                    data.append("UploadedImage", files[0]);
+                }
+
+                // Make Ajax request with the contentType = false, and procesDate = false
+                var ajaxRequest = $.ajax({
+                    type: "POST",
+                    url: "/api/file/ConvertToVids",
+                    contentType: false,
+                    processData: false,
+                    data: data
+                });
+
+                ajaxRequest.done(function (xhr, textStatus, data) {
+                    
+                });
+            });
+        });
+    </script>
+</body>
+</html>
