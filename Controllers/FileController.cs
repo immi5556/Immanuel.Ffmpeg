@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -7,6 +8,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web.Http;
 
 namespace Immanuel.Ffmpeg.Controllers
@@ -14,7 +16,7 @@ namespace Immanuel.Ffmpeg.Controllers
     public class FileController : ApiController
     {
         [HttpPost]
-        public string ConvertToVids()
+        public HttpResponseMessage ConvertToVids()
         {
             string pPath = System.Web.Hosting.HostingEnvironment.MapPath("~/App_Data/Temp");
             System.Web.HttpFileCollection hfc = System.Web.HttpContext.Current.Request.Files;
@@ -22,15 +24,23 @@ namespace Immanuel.Ffmpeg.Controllers
             {
                 throw new ApplicationException("Empty File Bad Request");
             }
-            var srcfile = GetFile(Path.Combine(GetDirectory(), hfc[0].FileName), 0);
             string totype = System.Web.HttpContext.Current.Request.Form["tofmt"];
-            string srctype = (Path.GetExtension(srcfile) ?? "").Replace(".", "");
+            string srctype = (Path.GetExtension(hfc[0].FileName) ?? "").Replace(".", "");
+            var srcfile = GetFile(Path.Combine(GetDirectory(srctype, totype), hfc[0].FileName), 0);
             string tofile = Path.ChangeExtension(srcfile, totype);
             hfc[0].SaveAs(srcfile);
             string args = GetArgs(srcfile, tofile, srctype, totype);
             ProcessExecute(args);
-            var tt = System.Web.HttpUtility.UrlEncode(@"~/App_data/Temp/" + Path.GetFileName(tofile));
-            return tt;
+            var datedir = Path.GetFileName(Path.GetDirectoryName(Path.GetDirectoryName(tofile)));
+            var tt = System.Web.HttpUtility.UrlEncode(@"~/App_data/Temp/" + datedir + @"/" + srctype + "_" + totype + @"/" + Path.GetFileName(tofile));
+            return new HttpResponseMessage()
+            {
+                Content = new JsonContent(new
+                {
+                    Path = tt,
+                    FileName = Path.ChangeExtension(hfc[0].FileName, totype)
+                })
+            };
         }
 
         [HttpGet]
@@ -50,11 +60,11 @@ namespace Immanuel.Ffmpeg.Controllers
             return response;
         }
 
-        string GetDirectory()
+        string GetDirectory(string srctype,string totype)
         {
             string path = System.Web.Hosting.HostingEnvironment.MapPath("~/App_Data/Temp");
             string tdir = (DateTime.Now.Year.ToString() + "_" + DateTime.Now.Month.ToString() + "_" + DateTime.Now.Day.ToString());
-            string fPath = Path.Combine(path, tdir);
+            string fPath = Path.Combine(path, tdir, srctype + "_" + totype);
             if (!Directory.Exists(fPath))
             {
                 Directory.CreateDirectory(fPath);
@@ -105,9 +115,65 @@ namespace Immanuel.Ffmpeg.Controllers
             string args = "";
             if (stype.ToLower() == "avi" && ttype.ToLower() == "mp4")
                 args = "-i \"" + srcfile + "\" -c:v libx264 -crf 19 -preset slow -c:a aac -b:a 192k -ac 2 \"" + tofile + "\"";
+            else if (stype.ToLower() == "mp4" && ttype.ToLower() == "avi")
+                args = "-i \"" + srcfile + "\" -vcodec copy -acodec copy  \"" + tofile + "\"";
             else if (stype.ToLower() == "wmv" && ttype.ToLower() == "mp4")
                 args = "-i \"" + srcfile + "\" -vcodec libx264 -pix_fmt yuv420p -profile:v baseline -preset slow -crf 22 -movflags +faststart \"" + tofile + "\"";
+            else if (stype.ToLower() == "mp4" && ttype.ToLower() == "wmv")
+                args = "-i \"" + srcfile + "\" -b 5000k -acodec wmav2 -vcodec wmv2 -ar 44100 -ab 56000 -ac 2 -y \"" + tofile + "\"";
+            else if (stype.ToLower() == "mpg" && ttype.ToLower() == "mp4")
+                args = "-i \"" + srcfile + "\" \"" + tofile + "\"";
+            else if (stype.ToLower() == "mp4" && ttype.ToLower() == "mpg")
+                args = "-i \"" + srcfile + "\" \"" + tofile + "\"";
+            else if (stype.ToLower() == "mov" && ttype.ToLower() == "mp4")
+                args = "-i \"" + srcfile + "\" -vcodec copy -acodec copy \"" + tofile + "\"";
+            else if (stype.ToLower() == "mp4" && ttype.ToLower() == "mov")
+                args = "-i \"" + srcfile + "\" -acodec copy -vcodec copy -f mov \"" + tofile + "\"";
+            else if (stype.ToLower() == "m4v" && ttype.ToLower() == "mp4")
+                args = "-i \"" + srcfile + "\" -vcodec copy -acodec copy \"" + tofile + "\"";
+            else if (stype.ToLower() == "mp4" && ttype.ToLower() == "m4v")
+                args = "-i \"" + srcfile + "\" -vcodec copy -acodec copy \"" + tofile + "\"";
+            else if (stype.ToLower() == "mkv" && ttype.ToLower() == "mp4")
+                args = "-i \"" + srcfile + "\" -vcodec copy -acodec copy \"" + tofile + "\"";
+            else if (stype.ToLower() == "mp4" && ttype.ToLower() == "mkv")
+                args = "-i \"" + srcfile + "\" -vcodec copy -acodec copy \"" + tofile + "\"";
+            else if (stype.ToLower() == "flv" && ttype.ToLower() == "mp4")
+                args = "-i \"" + srcfile + "\" -qscale 0 -ar 22050 -vcodec libx264 \"" + tofile + "\"";
+            else if (stype.ToLower() == "mp4" && ttype.ToLower() == "flv")
+                args = "-i \"" + srcfile + "\" -c:v libx264 -ar 22050 -crf 28 \"" + tofile + "\"";
+            else if (stype.ToLower() == "webm" && ttype.ToLower() == "mp4")
+                args = "-i \"" + srcfile + "\" -qscale 0 \"" + tofile + "\"";
+            else if (stype.ToLower() == "mp4" && ttype.ToLower() == "webm")
+                args = "-i \"" + srcfile + "\" -preset ultrafast \"" + tofile + "\"";
             return args;
+        }
+    }
+
+    public class JsonContent : HttpContent
+    {
+
+        private readonly MemoryStream _Stream = new MemoryStream();
+        public JsonContent(object value)
+        {
+
+            Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            var jw = new JsonTextWriter(new StreamWriter(_Stream));
+            jw.Formatting = Formatting.Indented;
+            var serializer = new JsonSerializer();
+            serializer.Serialize(jw, value);
+            jw.Flush();
+            _Stream.Position = 0;
+
+        }
+        protected override Task SerializeToStreamAsync(Stream stream, TransportContext context)
+        {
+            return _Stream.CopyToAsync(stream);
+        }
+
+        protected override bool TryComputeLength(out long length)
+        {
+            length = _Stream.Length;
+            return true;
         }
     }
 }
