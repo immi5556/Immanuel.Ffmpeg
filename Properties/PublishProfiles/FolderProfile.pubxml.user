@@ -29,10 +29,10 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>07/14/2017 00:39:53</publishTime>
     </File>
     <File Include="bin/Immanuel.Ffmpeg.dll">
-      <publishTime>07/17/2017 01:29:27</publishTime>
+      <publishTime>07/17/2017 10:57:35</publishTime>
     </File>
     <File Include="bin/Immanuel.Ffmpeg.pdb">
-      <publishTime>07/17/2017 01:29:27</publishTime>
+      <publishTime>07/17/2017 10:57:35</publishTime>
     </File>
     <File Include="bin/Microsoft.AI.Agent.Intercept.dll">
       <publishTime>12/01/2016 01:37:42</publishTime>
@@ -215,7 +215,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>07/15/2017 21:06:14</publishTime>
     </File>
     <File Include="Content/share_1.png">
-      <publishTime>07/17/2017 01:19:01</publishTime>
+      <publishTime>07/17/2017 07:15:23</publishTime>
     </File>
     <File Include="Content/Site.css">
       <publishTime>07/14/2017 20:14:07</publishTime>
@@ -240,6 +240,15 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     </File>
     <File Include="Global.asax">
       <publishTime>07/14/2017 20:14:07</publishTime>
+    </File>
+    <File Include="html/Index_.html">
+      <publishTime>07/17/2017 10:20:03</publishTime>
+    </File>
+    <File Include="html/jquery-1.10.2.js">
+      <publishTime>07/17/2017 10:16:39</publishTime>
+    </File>
+    <File Include="html/jquery.signalR-2.2.2.js">
+      <publishTime>07/17/2017 10:17:04</publishTime>
     </File>
     <File Include="packages.config">
       <publishTime>07/14/2017 21:23:54</publishTime>
@@ -286,11 +295,14 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <File Include="Scripts/respond.min.js">
       <publishTime>07/14/2017 20:14:15</publishTime>
     </File>
+    <File Include="Views/Home/Chat.cshtml">
+      <publishTime>07/17/2017 10:56:57</publishTime>
+    </File>
     <File Include="Views/Home/Converter.cshtml">
-      <publishTime>07/17/2017 01:29:03</publishTime>
+      <publishTime>07/17/2017 11:02:11</publishTime>
     </File>
     <File Include="Views/Home/Index.cshtml">
-      <publishTime>07/15/2017 01:20:36</publishTime>
+      <publishTime>07/17/2017 11:01:20</publishTime>
     </File>
     <File Include="Views/Shared/Error.cshtml">
       <publishTime>07/14/2017 20:14:07</publishTime>

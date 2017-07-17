@@ -15,9 +15,11 @@ namespace Immanuel.Ffmpeg.Controllers
 {
     public class FileController : ApiController
     {
+        static int GlobalCnt = 0;
         [HttpPost]
         public HttpResponseMessage ConvertToVids()
         {
+            ++GlobalCnt;
             string pPath = System.Web.Hosting.HostingEnvironment.MapPath("~/App_Data/Temp");
             System.Web.HttpFileCollection hfc = System.Web.HttpContext.Current.Request.Files;
             if (hfc.Count < 1)
@@ -38,7 +40,20 @@ namespace Immanuel.Ffmpeg.Controllers
                 Content = new JsonContent(new
                 {
                     Path = tt,
-                    FileName = Path.ChangeExtension(hfc[0].FileName, totype)
+                    FileName = Path.ChangeExtension(hfc[0].FileName, totype),
+                    TotCnt = GlobalCnt
+                })
+            };
+        }
+
+        [HttpGet]
+        public HttpResponseMessage GetCnt()
+        {
+            return new HttpResponseMessage()
+            {
+                Content = new JsonContent(new
+                {
+                    TotCnt = GlobalCnt
                 })
             };
         }
@@ -113,6 +128,7 @@ namespace Immanuel.Ffmpeg.Controllers
         static string GetArgs(string srcfile, string tofile, string stype, string ttype)
         {
             string args = "";
+            //All mp4
             if (stype.ToLower() == "avi" && ttype.ToLower() == "mp4")
                 args = "-i \"" + srcfile + "\" -c:v libx264 -crf 19 -preset slow -c:a aac -b:a 192k -ac 2 \"" + tofile + "\"";
             else if (stype.ToLower() == "mp4" && ttype.ToLower() == "avi")
@@ -144,6 +160,125 @@ namespace Immanuel.Ffmpeg.Controllers
             else if (stype.ToLower() == "webm" && ttype.ToLower() == "mp4")
                 args = "-i \"" + srcfile + "\" -qscale 0 \"" + tofile + "\"";
             else if (stype.ToLower() == "mp4" && ttype.ToLower() == "webm")
+                args = "-i \"" + srcfile + "\" -preset ultrafast \"" + tofile + "\"";
+            // ALL AVI
+            else if (stype.ToLower() == "wmv" && ttype.ToLower() == "avi")
+                args = "-i \"" + srcfile + "\" -vcodec libx264 -pix_fmt yuv420p -profile:v baseline -preset slow -crf 22 -movflags +faststart \"" + tofile + "\"";
+            else if (stype.ToLower() == "avi" && ttype.ToLower() == "wmv")
+                args = "-i \"" + srcfile + "\" -b 5000k -acodec wmav2 -vcodec wmv2 -ar 44100 -ab 56000 -ac 2 -y \"" + tofile + "\"";
+            else if (stype.ToLower() == "mpg" && ttype.ToLower() == "avi")
+                args = "-i \"" + srcfile + "\" \"" + tofile + "\"";
+            else if (stype.ToLower() == "avi" && ttype.ToLower() == "mpg")
+                args = "-i \"" + srcfile + "\" \"" + tofile + "\"";
+            else if (stype.ToLower() == "mov" && ttype.ToLower() == "avi")
+                args = "-i \"" + srcfile + "\" -vcodec copy -acodec copy \"" + tofile + "\"";
+            else if (stype.ToLower() == "avi" && ttype.ToLower() == "mov")
+                args = "-i \"" + srcfile + "\" -acodec copy -vcodec copy -f mov \"" + tofile + "\"";
+            else if (stype.ToLower() == "m4v" && ttype.ToLower() == "avi")
+                args = "-i \"" + srcfile + "\" -vcodec copy -acodec copy \"" + tofile + "\"";
+            else if (stype.ToLower() == "avi" && ttype.ToLower() == "m4v")
+                args = "-i \"" + srcfile + "\" -vcodec copy -acodec copy \"" + tofile + "\"";
+            else if (stype.ToLower() == "mkv" && ttype.ToLower() == "avi")
+                args = "-i \"" + srcfile + "\" -vcodec copy -acodec copy \"" + tofile + "\"";
+            else if (stype.ToLower() == "avi" && ttype.ToLower() == "mkv")
+                args = "-i \"" + srcfile + "\" -vcodec copy -acodec copy \"" + tofile + "\"";
+            else if (stype.ToLower() == "flv" && ttype.ToLower() == "avi")
+                args = "-i \"" + srcfile + "\" -qscale 0 -ar 22050 -vcodec libx264 \"" + tofile + "\"";
+            else if (stype.ToLower() == "avi" && ttype.ToLower() == "flv")
+                args = "-i \"" + srcfile + "\" -c:v libx264 -ar 22050 -crf 28 \"" + tofile + "\"";
+            else if (stype.ToLower() == "webm" && ttype.ToLower() == "avi")
+                args = "-i \"" + srcfile + "\" -qscale 0 \"" + tofile + "\"";
+            else if (stype.ToLower() == "avi" && ttype.ToLower() == "webm")
+                args = "-i \"" + srcfile + "\" -preset ultrafast \"" + tofile + "\"";
+            //ALL WMV
+            else if (stype.ToLower() == "mpg" && ttype.ToLower() == "wmv")
+                args = "-i \"" + srcfile + "\" \"" + tofile + "\"";
+            else if (stype.ToLower() == "wmv" && ttype.ToLower() == "mpg")
+                args = "-i \"" + srcfile + "\" \"" + tofile + "\"";
+            else if (stype.ToLower() == "mov" && ttype.ToLower() == "wmv")
+                args = "-i \"" + srcfile + "\" -vcodec copy -acodec copy \"" + tofile + "\"";
+            else if (stype.ToLower() == "wmv" && ttype.ToLower() == "mov")
+                args = "-i \"" + srcfile + "\" -acodec copy -vcodec copy -f mov \"" + tofile + "\"";
+            else if (stype.ToLower() == "m4v" && ttype.ToLower() == "wmv")
+                args = "-i \"" + srcfile + "\" -vcodec copy -acodec copy \"" + tofile + "\"";
+            else if (stype.ToLower() == "wmv" && ttype.ToLower() == "m4v")
+                args = "-i \"" + srcfile + "\" -vcodec copy -acodec copy \"" + tofile + "\"";
+            else if (stype.ToLower() == "mkv" && ttype.ToLower() == "wmv")
+                args = "-i \"" + srcfile + "\" -vcodec copy -acodec copy \"" + tofile + "\"";
+            else if (stype.ToLower() == "wmv" && ttype.ToLower() == "mkv")
+                args = "-i \"" + srcfile + "\" -vcodec copy -acodec copy \"" + tofile + "\"";
+            else if (stype.ToLower() == "flv" && ttype.ToLower() == "wmv")
+                args = "-i \"" + srcfile + "\" -qscale 0 -ar 22050 -vcodec libx264 \"" + tofile + "\"";
+            else if (stype.ToLower() == "wmv" && ttype.ToLower() == "flv")
+                args = "-i \"" + srcfile + "\" -c:v libx264 -ar 22050 -crf 28 \"" + tofile + "\"";
+            else if (stype.ToLower() == "webm" && ttype.ToLower() == "wmv")
+                args = "-i \"" + srcfile + "\" -qscale 0 \"" + tofile + "\"";
+            else if (stype.ToLower() == "wmv" && ttype.ToLower() == "webm")
+                args = "-i \"" + srcfile + "\" -preset ultrafast \"" + tofile + "\"";
+            //ALL MPG
+            else if (stype.ToLower() == "mov" && ttype.ToLower() == "mpg")
+                args = "-i \"" + srcfile + "\" -vcodec copy -acodec copy \"" + tofile + "\"";
+            else if (stype.ToLower() == "mpg" && ttype.ToLower() == "mov")
+                args = "-i \"" + srcfile + "\" -acodec copy -vcodec copy -f mov \"" + tofile + "\"";
+            else if (stype.ToLower() == "m4v" && ttype.ToLower() == "mpg")
+                args = "-i \"" + srcfile + "\" -vcodec copy -acodec copy \"" + tofile + "\"";
+            else if (stype.ToLower() == "mpg" && ttype.ToLower() == "m4v")
+                args = "-i \"" + srcfile + "\" -vcodec copy -acodec copy \"" + tofile + "\"";
+            else if (stype.ToLower() == "mkv" && ttype.ToLower() == "mpg")
+                args = "-i \"" + srcfile + "\" -vcodec copy -acodec copy \"" + tofile + "\"";
+            else if (stype.ToLower() == "mpg" && ttype.ToLower() == "mkv")
+                args = "-i \"" + srcfile + "\" -vcodec copy -acodec copy \"" + tofile + "\"";
+            else if (stype.ToLower() == "flv" && ttype.ToLower() == "mpg")
+                args = "-i \"" + srcfile + "\" -qscale 0 -ar 22050 -vcodec libx264 \"" + tofile + "\"";
+            else if (stype.ToLower() == "mpg" && ttype.ToLower() == "flv")
+                args = "-i \"" + srcfile + "\" -c:v libx264 -ar 22050 -crf 28 \"" + tofile + "\"";
+            else if (stype.ToLower() == "webm" && ttype.ToLower() == "mpg")
+                args = "-i \"" + srcfile + "\" -qscale 0 \"" + tofile + "\"";
+            else if (stype.ToLower() == "mpg" && ttype.ToLower() == "webm")
+                args = "-i \"" + srcfile + "\" -preset ultrafast \"" + tofile + "\"";
+            //ALL MOV
+            else if (stype.ToLower() == "m4v" && ttype.ToLower() == "mov")
+                args = "-i \"" + srcfile + "\" -vcodec copy -acodec copy \"" + tofile + "\"";
+            else if (stype.ToLower() == "mov" && ttype.ToLower() == "m4v")
+                args = "-i \"" + srcfile + "\" -vcodec copy -acodec copy \"" + tofile + "\"";
+            else if (stype.ToLower() == "mkv" && ttype.ToLower() == "mov")
+                args = "-i \"" + srcfile + "\" -vcodec copy -acodec copy \"" + tofile + "\"";
+            else if (stype.ToLower() == "mov" && ttype.ToLower() == "mkv")
+                args = "-i \"" + srcfile + "\" -vcodec copy -acodec copy \"" + tofile + "\"";
+            else if (stype.ToLower() == "flv" && ttype.ToLower() == "mov")
+                args = "-i \"" + srcfile + "\" -qscale 0 -ar 22050 -vcodec libx264 \"" + tofile + "\"";
+            else if (stype.ToLower() == "mov" && ttype.ToLower() == "flv")
+                args = "-i \"" + srcfile + "\" -c:v libx264 -ar 22050 -crf 28 \"" + tofile + "\"";
+            else if (stype.ToLower() == "webm" && ttype.ToLower() == "mov")
+                args = "-i \"" + srcfile + "\" -qscale 0 \"" + tofile + "\"";
+            else if (stype.ToLower() == "mov" && ttype.ToLower() == "webm")
+                args = "-i \"" + srcfile + "\" -preset ultrafast \"" + tofile + "\"";
+            //ALL M4V
+            else if (stype.ToLower() == "mkv" && ttype.ToLower() == "m4v")
+                args = "-i \"" + srcfile + "\" -vcodec copy -acodec copy \"" + tofile + "\"";
+            else if (stype.ToLower() == "m4v" && ttype.ToLower() == "mkv")
+                args = "-i \"" + srcfile + "\" -vcodec copy -acodec copy \"" + tofile + "\"";
+            else if (stype.ToLower() == "flv" && ttype.ToLower() == "m4v")
+                args = "-i \"" + srcfile + "\" -qscale 0 -ar 22050 -vcodec libx264 \"" + tofile + "\"";
+            else if (stype.ToLower() == "m4v" && ttype.ToLower() == "flv")
+                args = "-i \"" + srcfile + "\" -c:v libx264 -ar 22050 -crf 28 \"" + tofile + "\"";
+            else if (stype.ToLower() == "webm" && ttype.ToLower() == "m4v")
+                args = "-i \"" + srcfile + "\" -qscale 0 \"" + tofile + "\"";
+            else if (stype.ToLower() == "m4v" && ttype.ToLower() == "webm")
+                args = "-i \"" + srcfile + "\" -preset ultrafast \"" + tofile + "\"";
+            //ALL MkV
+            else if (stype.ToLower() == "flv" && ttype.ToLower() == "mkv")
+                args = "-i \"" + srcfile + "\" -qscale 0 -ar 22050 -vcodec libx264 \"" + tofile + "\"";
+            else if (stype.ToLower() == "mkv" && ttype.ToLower() == "flv")
+                args = "-i \"" + srcfile + "\" -c:v libx264 -ar 22050 -crf 28 \"" + tofile + "\"";
+            else if (stype.ToLower() == "webm" && ttype.ToLower() == "mkv")
+                args = "-i \"" + srcfile + "\" -qscale 0 \"" + tofile + "\"";
+            else if (stype.ToLower() == "mkv" && ttype.ToLower() == "webm")
+                args = "-i \"" + srcfile + "\" -preset ultrafast \"" + tofile + "\"";
+            //ALL FLV
+            else if (stype.ToLower() == "webm" && ttype.ToLower() == "flv")
+                args = "-i \"" + srcfile + "\" -qscale 0 \"" + tofile + "\"";
+            else if (stype.ToLower() == "flv" && ttype.ToLower() == "webm")
                 args = "-i \"" + srcfile + "\" -preset ultrafast \"" + tofile + "\"";
             return args;
         }

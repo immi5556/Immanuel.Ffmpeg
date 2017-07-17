@@ -18,6 +18,11 @@ namespace Immanuel.Ffmpeg.Controllers
             return View();
         }
 
+        public ActionResult Chat()
+        {
+            return View();
+        }
+
         public ActionResult Contact()
         {
             ViewBag.Message = "Your contact page.";

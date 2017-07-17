@@ -20,7 +20,7 @@
     <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
     <meta name="keywords" content="free online video converter,no download required,video conversion , encoder,video encoder, video encoding, video converter, mp4, avi, wmv, video formatter" />
 </head>
-<body>
+<body style="text-align: center;">
     <div id="fb-root"></div>
     <script>
         (function (d, s, id) {
@@ -30,7 +30,7 @@
             js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.9";
             fjs.parentNode.insertBefore(js, fjs);
         }(document, 'script', 'facebook-jssdk'));</script>
-    <div class="fb-share-button" style="position:absolute;right:0;bottom:10px;" data-href="http://video-converter.immanuel.co/home/converter" data-layout="box_count" data-size="large" data-mobile-iframe="true"><a class="fb-xfbml-parse-ignore" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Fvideo-converter.immanuel.co%2Fhome%2Fconverter&amp;src=sdkpreparse">Share</a></div>
+    <div class="fb-share-button" style="position:absolute;right:0;bottom:12px;right:12px;" data-href="http://video-converter.immanuel.co/home/converter" data-layout="box_count" data-size="large" data-mobile-iframe="true"><a class="fb-xfbml-parse-ignore" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Fvideo-converter.immanuel.co%2Fhome%2Fconverter&amp;src=sdkpreparse">Share</a></div>
     <div style="position:relative;">
         <h2 style="display: inline-block;">
             Convert video, pdf, images for free, fast and online. No software installation needed.
@@ -46,7 +46,9 @@
         </div>
     </div>
     <hr />
-    <div id="vid-contain" style="height:400px;background-color:#46788c;display:inline-block;border-radius:15px;">
+    <h3>Files Converted - <span id="gnt"></span></h3>
+    <hr />
+    <div id="vid-contain" style="height:400px;background-color:#46788c;display:inline-block;border-radius:15px;position: relative;">
         <div class="vid-list" style="background-color:#a5a1a0;border-radius: 15px;display: table;text-align:center;vertical-align:middle;">
             @*<form method="post" action="/api/File/ConvertToVids" enctype="multipart/form-data">*@
             <div class="upl-vid" style="height:80px;width:150px;text-align:center;vertical-align:middle;display:table-cell;">
@@ -88,6 +90,16 @@
     </div>
     <script>
                 $(document).ready(function () {
+
+                    $.ajax({
+                        type: "GET",
+                        url: "/api/file/GetCnt",
+                        contentType: false,
+                        processData: false
+                    }).done(function (data) {
+                        $("#gnt").text(data.TotCnt);
+                    });
+
                     $(".upl-vid").on("click", function (evt) {
                         evt.preventDefault();
                         $(this).closest(".vid-list").find(".upl-file").trigger("click");
@@ -118,6 +130,10 @@
                             alert("select source file");
                             return;
                         }
+                        if (files[0].name.split('.').pop() == $("#tofmt").val()) {
+                            alert("select different format from source");
+                            return;
+                        }
                         data.append("tofmt", $("#tofmt").val());
                         // Add the uploaded image content to the form data collection
                         if (files.length > 0) {
@@ -134,8 +150,9 @@
                         });
 
                         ajaxRequest.done(function (data, xhr, textStatus) {
-                            var dl = "<a class='buttonDownload' style='margin-top:10px;' href='/api/file/GetFiles?pth=" + data.Path + "' target='_blank'>Download - " + data.FileName + "</a> <a style='cursor:pointer;' class='fbsharelink' data-shareurl='" + data.Path + "'><img src='/Content/share_1.png' width='30' height='30' /></a><br />";
+                            var dl = "<a class='buttonDownload' style='margin-top:10px;' href='/api/file/GetFiles?pth=" + data.Path + "' target='_blank'>Download - " + data.FileName + "</a> <a style='cursor:pointer;' class='fbsharelink' data-shareurl='" + data.Path + "'><img src='/Content/share_1.png' width='30' height='30' /></a> <br /><span>(Available for 3 Hrs)</span><br />";
                             $("#vid-list").append($(dl));
+                            $("#gnt").text(data.TotCnt);
                         });
 
                         ajaxRequest.fail(function (data, xhr, textStatus) {
@@ -144,8 +161,8 @@
 
                         ajaxRequest.always(function (data, xhr, textStatus) {
                             $(".uplvid-prog").css("display", "none");
-                            $("#fileUpload").replaceWith($("#fileUpload").val('').clone(true));
-                            $("#selfile").text("Choose File");
+                            //$("#fileUpload").replaceWith($("#fileUpload").val('').clone(true));
+                            //$("#selfile").text("Choose File");
                         });
                     });
 
@@ -153,7 +170,6 @@
                         var shareurl = $(this).data('shareurl');
                         window.open('https://www.facebook.com/sharer/sharer.php?u=' + shareurl + '&t=' + document.title, '',
                             'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=300,width=600');
-                        return false;
                     });
                 });
     </script>
