@@ -20,33 +20,39 @@
     <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
     <meta name="keywords" content="free online video converter,no download required,video conversion , encoder,video encoder, video encoding, video converter, mp4, avi, wmv, video formatter" />
 </head>
-<body style="text-align: center;">
-    <div id="fb-root"></div>
-    <script>
-        (function (d, s, id) {
-            var js, fjs = d.getElementsByTagName(s)[0];
-            if (d.getElementById(id)) return;
-            js = d.createElement(s); js.id = id;
-            js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.9";
-            fjs.parentNode.insertBefore(js, fjs);
-        }(document, 'script', 'facebook-jssdk'));</script>
-    <div class="fb-share-button" style="position:absolute;right:0;bottom:12px;right:12px;" data-href="http://video-converter.immanuel.co/home/converter" data-layout="box_count" data-size="large" data-mobile-iframe="true"><a class="fb-xfbml-parse-ignore" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Fvideo-converter.immanuel.co%2Fhome%2Fconverter&amp;src=sdkpreparse">Share</a></div>
+<body style="text-align: center;font-family: 'Arial Narrow', Arial, sans-serif;">
+    <div style="position:fixed;top:10px;left:15px;text-align: center;border: 2px green dashed;z-index:101;background-color:cadetblue;">
+        <span style="background-color:azure;display:inline-block;width:70px;padding:5px;">Key Pair</span><br />
+        <span style="color:white;font-size:large;" id="gnt"></span> <br />
+        <span style="background-color:azure;display:inline-block;width:70px;padding:5px;">Counts</span>
+    </div>
+    <div style="position:absolute;top:27px;right:12px;">
+        <div id="fb-root"></div>
+        <script>
+            (function (d, s, id) {
+                var js, fjs = d.getElementsByTagName(s)[0];
+                if (d.getElementById(id)) return;
+                js = d.createElement(s); js.id = id;
+                js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.9";
+                fjs.parentNode.insertBefore(js, fjs);
+            }(document, 'script', 'facebook-jssdk'));</script>
+        <div class="fb-share-button" data-href="http://video-converter.immanuel.co/home/converter" data-layout="box_count" data-size="large" data-mobile-iframe="true"><a class="fb-xfbml-parse-ignore" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Fvideo-converter.immanuel.co%2Fhome%2Fconverter&amp;src=sdkpreparse">Share</a></div>
+    </div>
+    <div style="position:absolute;right:0;top:5;">
+        <div id="google_translate_element"></div>
+        <script type="text/javascript">
+            function googleTranslateElementInit() {
+                new google.translate.TranslateElement({ pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE }, 'google_translate_element');
+            }
+        </script>
+        <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    </div>
+
     <div style="position:relative;">
         <h2 style="display: inline-block;">
-            Convert video, pdf, images for free, fast and online. No software installation needed.
+            Convert video files free, fast and online. No software installation needed.
         </h2>
-        <div style="display: inline-block; position:absolute;right:0;">
-            <div id="google_translate_element"></div>
-            <script type="text/javascript">
-                function googleTranslateElementInit() {
-                    new google.translate.TranslateElement({ pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE }, 'google_translate_element');
-                }
-            </script>
-            <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-        </div>
-    </div>
-    <hr />
-    <h3>Files Converted - <span id="gnt"></span></h3>
+    </div><br />
     <hr />
     <div id="vid-contain" style="height:400px;background-color:#46788c;display:inline-block;border-radius:15px;position: relative;">
         <div class="vid-list" style="background-color:#a5a1a0;border-radius: 15px;display: table;text-align:center;vertical-align:middle;">
@@ -89,89 +95,120 @@
         <div style="clear:both;"></div>
     </div>
     <script>
-                $(document).ready(function () {
+            $(document).ready(function () {
+                actOnValue('piiofpr9', 'VisitCnt', 'increment');
+                getValue('piiofpr9', 'VisitCnt');
 
-                    $.ajax({
-                        type: "GET",
-                        url: "/api/file/GetCnt",
+                $(".upl-vid").on("click", function (evt) {
+                    evt.preventDefault();
+                    $(this).closest(".vid-list").find(".upl-file").trigger("click");
+                });
+
+                $("#fileUpload").on("change", function () {
+                    console.log($(this).val());
+                    var fname = $(this).val();
+                    var ext = fname.split('.').pop();
+                    var typearrs = $("#tofmt option").map(function () {
+                        return $(this).val();
+                    }).get();
+                    if (typearrs.indexOf(ext.toLowerCase()) < 0) {
+                        alert('File TypeNot supported..')
+                        return false;
+                    }
+                    var ofn = fname.split('\\').pop();
+                    ofn = (ofn || "").length > 11 ? (ofn.substr(0, 8) + ".." + $("#tofmt").val()) : ofn;
+                    $("#selfile").text(ofn);
+                });
+
+                $('#btnUpload').on('click', function () {
+                    actOnValue('piiofpr9', 'ConvertCnt', 'increment');
+                    var data = new FormData();
+
+                    var files = $("#fileUpload").get(0).files;
+                    if (!files || !files.length || !files[0].name) {
+                        alert("select source file");
+                        return;
+                    }
+                    if (files[0].name.split('.').pop() == $("#tofmt").val()) {
+                        alert("select different format from source");
+                        return;
+                    }
+                    data.append("tofmt", $("#tofmt").val());
+                    // Add the uploaded image content to the form data collection
+                    if (files.length > 0) {
+                        data.append("UploadedImage", files[0]);
+                    }
+                    $(".uplvid-prog").css("display", "table-cell");
+                    // Make Ajax request with the contentType = false, and procesDate = false
+                    var ajaxRequest = $.ajax({
+                        type: "POST",
+                        url: "/api/file/ConvertToVids",
                         contentType: false,
-                        processData: false
-                    }).done(function (data) {
-                        $("#gnt").text(data.TotCnt);
+                        processData: false,
+                        data: data
                     });
 
-                    $(".upl-vid").on("click", function (evt) {
-                        evt.preventDefault();
-                        $(this).closest(".vid-list").find(".upl-file").trigger("click");
+                    ajaxRequest.done(function (data, xhr, textStatus) {
+                        var dl = "<a class='buttonDownload' style='margin-top:10px;' href='/api/file/GetFiles?pth=" + data.Path + "' target='_blank'>Download - " + data.FileName + "</a> <a style='cursor:pointer;' class='fbsharelink' data-shareurl='" + data.Path + "'><img src='/Content/share_1.png' width='30' height='30' /></a> <br /><span>(Available for 3 Hrs)</span><br />";
+                        $("#vid-list").append($(dl));
+                        //$("#gnt").text(data.TotCnt);
                     });
 
-                    $("#fileUpload").on("change", function () {
-                        console.log($(this).val());
-                        var fname = $(this).val();
-                        var ext = fname.split('.').pop();
-                        var typearrs = $("#tofmt option").map(function () {
-                            return $(this).val();
-                        }).get();
-                        if (typearrs.indexOf(ext.toLowerCase()) < 0) {
-                            alert('File TypeNot supported..')
-                            return false;
-                        }
-                        var ofn = fname.split('\\').pop();
-                        ofn = (ofn || "").length > 11 ? (ofn.substr(0, 8) + ".." + $("#tofmt").val()) : ofn;
-                        $("#selfile").text(ofn);
+                    ajaxRequest.fail(function (data, xhr, textStatus) {
+                        $("#vid-error").text("Erro occured in converting, pls contact <a href='mailto:raj@immanuel.co'>admin</a>");
                     });
 
-                    $('#btnUpload').on('click', function () {
-
-                        var data = new FormData();
-
-                        var files = $("#fileUpload").get(0).files;
-                        if (!files || !files.length || !files[0].name) {
-                            alert("select source file");
-                            return;
-                        }
-                        if (files[0].name.split('.').pop() == $("#tofmt").val()) {
-                            alert("select different format from source");
-                            return;
-                        }
-                        data.append("tofmt", $("#tofmt").val());
-                        // Add the uploaded image content to the form data collection
-                        if (files.length > 0) {
-                            data.append("UploadedImage", files[0]);
-                        }
-                        $(".uplvid-prog").css("display", "table-cell");
-                        // Make Ajax request with the contentType = false, and procesDate = false
-                        var ajaxRequest = $.ajax({
-                            type: "POST",
-                            url: "/api/file/ConvertToVids",
-                            contentType: false,
-                            processData: false,
-                            data: data
-                        });
-
-                        ajaxRequest.done(function (data, xhr, textStatus) {
-                            var dl = "<a class='buttonDownload' style='margin-top:10px;' href='/api/file/GetFiles?pth=" + data.Path + "' target='_blank'>Download - " + data.FileName + "</a> <a style='cursor:pointer;' class='fbsharelink' data-shareurl='" + data.Path + "'><img src='/Content/share_1.png' width='30' height='30' /></a> <br /><span>(Available for 3 Hrs)</span><br />";
-                            $("#vid-list").append($(dl));
-                            $("#gnt").text(data.TotCnt);
-                        });
-
-                        ajaxRequest.fail(function (data, xhr, textStatus) {
-                            $("#vid-error").text("Erro occured in converting, pls contact <a href='mailto:raj@immanuel.co'>admin</a>");
-                        });
-
-                        ajaxRequest.always(function (data, xhr, textStatus) {
-                            $(".uplvid-prog").css("display", "none");
-                            //$("#fileUpload").replaceWith($("#fileUpload").val('').clone(true));
-                            //$("#selfile").text("Choose File");
-                        });
-                    });
-
-                    $(document).on("click", '.fbsharelink', function () {
-                        var shareurl = $(this).data('shareurl');
-                        window.open('https://www.facebook.com/sharer/sharer.php?u=' + shareurl + '&t=' + document.title, '',
-                            'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=300,width=600');
+                    ajaxRequest.always(function (data, xhr, textStatus) {
+                        $(".uplvid-prog").css("display", "none");
+                        //$("#fileUpload").replaceWith($("#fileUpload").val('').clone(true));
+                        //$("#selfile").text("Choose File");
                     });
                 });
+
+                $(document).on("click", '.fbsharelink', function () {
+                    var shareurl = $(this).data('shareurl');
+                    window.open('https://www.facebook.com/sharer/sharer.php?u=' + shareurl + '&t=' + document.title, '',
+                        'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=300,width=600');
+                });
+            });
+    </script>
+    <script type="text/javascript">
+            var getValue = function (appkey, itemkey) {
+                $.ajax({
+                    type: "GET",
+                    url: "http://keyvalue.immanuel.co/api/KeyVal/GetValue/" + appkey + "/" + itemkey,
+                    contentType: false,
+                    processData: false
+                }).done(function (data) {
+                    $("#gnt").text(data || "0");
+                }).fail(function (err) {
+
+                });
+            }
+            var updateValue = function (appkey, itemkey, itemval) {
+                $.ajax({
+                    type: "POST",
+                    url: "http://keyvalue.immanuel.co/api/KeyVal/UpdateValue/" + appkey + "/" + itemkey + "/" + itemval,
+                    contentType: false,
+                    processData: false
+                }).done(function (data) {
+
+                }).fail(function (err) {
+
+                });
+            }
+            var actOnValue = function (appkey, itemkey, action) {
+                $.ajax({
+                    type: "POST",
+                    url: "http://keyvalue.immanuel.co/api/KeyVal/ActOnValue/" + appkey + "/" + itemkey + "/" + action,
+                    contentType: false,
+                    processData: false
+                }).done(function (data) {
+
+                }).fail(function (err) {
+
+                });
+            }
     </script>
     <script>
                 (function (i, s, o, g, r, a, m) {
@@ -181,8 +218,8 @@
                         m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
                 })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
 
-                ga('create', 'UA-102636146-1', 'auto');
-                ga('send', 'pageview');
+            ga('create', 'UA-102636146-1', 'auto');
+            ga('send', 'pageview');
 
     </script>
 </body>
