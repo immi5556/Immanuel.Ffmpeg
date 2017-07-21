@@ -16,6 +16,37 @@ namespace Immanuel.Ffmpeg.Controllers
     public class FileController : ApiController
     {
         static int GlobalCnt = 0;
+
+        [HttpPost]
+        public HttpResponseMessage Converter()
+        {
+            ++GlobalCnt;
+            string pPath = System.Web.Hosting.HostingEnvironment.MapPath("~/App_Data/Temp");
+            System.Web.HttpFileCollection hfc = System.Web.HttpContext.Current.Request.Files;
+            if (hfc.Count < 1)
+            {
+                throw new ApplicationException("Empty File Bad Request");
+            }
+            string totype = System.Web.HttpContext.Current.Request.Form["tofmt"] ?? "wav"; //FIX this post form
+            string srctype = (Path.GetExtension(hfc[0].FileName) ?? "").Replace(".", "");
+            var srcfile = GetFile(Path.Combine(GetDirectory(srctype, totype), hfc[0].FileName), 0);
+            string tofile = Path.ChangeExtension(srcfile, totype);
+            hfc[0].SaveAs(srcfile);
+            string args = GetArgs(srcfile, tofile, srctype, totype);
+            ProcessExecute(args);
+            HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK);
+            byte[] arr = File.ReadAllBytes(tofile);
+            response.Content = new StreamContent(new MemoryStream(arr));
+            response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/pdf");
+            response.Content.Headers.ContentLength = arr.Length;
+            response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
+            {
+                FileName = Path.GetFileName(pPath)
+            };
+
+            return response;
+        }
+
         [HttpPost]
         public HttpResponseMessage ConvertToVids()
         {
@@ -280,6 +311,9 @@ namespace Immanuel.Ffmpeg.Controllers
                 args = "-i \"" + srcfile + "\" -qscale 0 \"" + tofile + "\"";
             else if (stype.ToLower() == "flv" && ttype.ToLower() == "webm")
                 args = "-i \"" + srcfile + "\" -preset ultrafast \"" + tofile + "\"";
+            //webm to WAV
+            else if (stype.ToLower() == "webm" && ttype.ToLower() == "wav")
+                args = "-i \"" + srcfile + "\" -acodec pcm_s16le -ac 2 \"" + tofile + "\"";
             return args;
         }
     }

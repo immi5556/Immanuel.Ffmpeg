@@ -8,3 +8,8 @@
 *.mkv
 *.mov
 *.mpg
+*.wav
+bin/
+obj/
+*.pdb
+*.dll
