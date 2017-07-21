@@ -13,3 +13,5 @@ bin/
 obj/
 *.pdb
 *.dll
+*.webm
+*.dll

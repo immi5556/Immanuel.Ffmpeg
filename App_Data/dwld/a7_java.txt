@@ -1,0 +1,148 @@
+﻿//Usage: 
+	File file = new File("C:/Immanuel/Sample.mp4");
+	ConvertVideo(file, "somefile.mp4", "mov");
+
+private static void ConvertVideo(File file, String filename, String toType) {
+	String boundary = "===" + System.currentTimeMillis() + "===";
+	String LINE_FEED = "\r\n";
+	HttpURLConnection httpConn = null;
+	String charset = "UTF-8";
+	OutputStream outputStream = null;
+	PrintWriter writer = null;
+
+	URL url = null;
+	try {
+		url = new URL("http://video-converter.immanuel.co/api/File/Converter");
+	} catch (MalformedURLException e3) {
+		// TODO Auto-generated catch block
+		e3.printStackTrace();
+	}
+    try {
+		httpConn = (HttpURLConnection) url.openConnection();
+	} catch (IOException e2) {
+		// TODO Auto-generated catch block
+		e2.printStackTrace();
+	}
+    httpConn.setUseCaches(false);
+    httpConn.setDoOutput(true); // indicates POST method
+    httpConn.setDoInput(true);
+    httpConn.setRequestProperty("Content-Type",
+            "multipart/form-data; boundary=" + boundary);
+    httpConn.setRequestProperty("User-Agent", "Immanuel Videoconvert");
+    try {
+		outputStream = httpConn.getOutputStream();
+	} catch (IOException e1) {
+		// TODO Auto-generated catch block
+		e1.printStackTrace();
+	}
+    try {
+		writer = new PrintWriter(new OutputStreamWriter(outputStream, charset),
+			    true);
+	} catch (UnsupportedEncodingException e1) {
+		// TODO Auto-generated catch block
+		e1.printStackTrace();
+	}
+	    
+	writer.append("--" + boundary).append(LINE_FEED);
+    writer.append("Content-Disposition: form-data; name=\"tofmt\"")
+            .append(LINE_FEED);
+    writer.append("Content-Type: text/plain; charset=" + charset).append(
+            LINE_FEED);
+    writer.append(LINE_FEED);
+    writer.append(toType).append(LINE_FEED);
+        
+    String fileName = file.getName();
+    writer.append("--" + boundary).append(LINE_FEED);
+    writer.append(
+            "Content-Disposition: form-data; name=\"file\"; filename=\"" + fileName + "\"")
+            .append(LINE_FEED);
+    writer.append(
+            "Content-Type: "
+                    + URLConnection.guessContentTypeFromName(fileName))
+            .append(LINE_FEED);
+    writer.append("Content-Transfer-Encoding: binary").append(LINE_FEED);
+    writer.append(LINE_FEED);
+    writer.flush();
+ 
+    FileInputStream inputStream = null;
+	try {
+		inputStream = new FileInputStream(file);
+	} catch (FileNotFoundException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+    byte[] buffer = new byte[4096];
+    int bytesRead = -1;
+    try {
+		while ((bytesRead = inputStream.read(buffer)) != -1) {
+			outputStream.write(buffer, 0, bytesRead);
+		}
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+    try {
+		outputStream.flush();
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+    try {
+		inputStream.close();
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+         
+    writer.append(LINE_FEED);
+
+    writer.append(LINE_FEED).flush();
+    writer.append("--" + boundary + "--").append(LINE_FEED);
+    writer.close();
+    int status = 0;
+	try {
+		status = httpConn.getResponseCode();
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+    if (status == HttpURLConnection.HTTP_OK) {
+        InputStreamReader reader = null;
+		try {
+			//reader = new BufferedReader(new InputStreamReader(
+			reader = new InputStreamReader(httpConn.getInputStream());
+				String saveFilePath = "C:/Immi/Projects/Honnex/SWs/eclipse-jee-neon-3-RC3-win32-x86_64/eclipse/" + fileName;
+				File nf = new File(saveFilePath);
+			FileOutputStream outputStream1 = new FileOutputStream(nf);
+			byte[] bytes = IOUtils.toByteArray(reader);
+			outputStream1.write(bytes);
+			outputStream1.flush();
+			outputStream1.close();
+		 
+		        outputStream1.close();
+		        inputStream.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        //String line = null;
+        //while ((line = reader.readLine()) != null) {
+            //  response.add(line);
+        //}
+        try {
+			reader.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        httpConn.disconnect();
+    } else {
+        try {
+			throw new IOException("Server returned non-OK status: " + status);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
+
+}

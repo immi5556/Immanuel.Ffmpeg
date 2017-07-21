@@ -1,0 +1,25 @@
+﻿// Usage: 
+string ss = @"C:\Immanuel\sample.mp4";
+string ext = "avi";
+byte[] response = ConvertVideo(File.ReadAllBytes(ss), Path.GetFileName(ss), ext)); 
+
+private static byte[] ConvertVideo(byte[] file, string filename, string toType)
+{
+    HttpContent bytesContent = new ByteArrayContent(file);
+    using (var client = new HttpClient())
+    using (var formData = new MultipartFormDataContent())
+    {
+        formData.Add(new StringContent(toType), "tofmt");
+        formData.Add(bytesContent, "file", filename);
+        var response = client.PostAsync(@"http://video-converter.immanuel.co/api/File/Converter", formData).Result;
+        if (!response.IsSuccessStatusCode)
+            return null;
+        byte[] arr;
+        using (MemoryStream ms = new MemoryStream())
+        {
+            response.Content.ReadAsStreamAsync().Result.CopyTo(ms);
+            arr = ms.ToArray();
+        }
+        return arr;
+    }
+}

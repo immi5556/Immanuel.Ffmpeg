@@ -83,3 +83,8 @@ C:\Immi\Personal\MyProjects\ffmeg\Immanuel.Ffmpeg\Immanuel.Ffmpeg\bin\Microsoft.
 C:\Immi\Personal\MyProjects\ffmeg\Immanuel.Ffmpeg\Immanuel.Ffmpeg\obj\Release\Immanuel.Ffmpeg.dll
 C:\Immi\Personal\MyProjects\ffmeg\Immanuel.Ffmpeg\Immanuel.Ffmpeg\obj\Release\Immanuel.Ffmpeg.pdb
 C:\Immi\Personal\MyProjects\ffmeg\Immanuel.Ffmpeg\Immanuel.Ffmpeg\obj\Release\Immanuel.Ffmpeg.csprojResolveAssemblyReference.cache
+C:\Immi\Personal\MyProjects\ffmeg\Immanuel.Ffmpeg\Immanuel.Ffmpeg\bin\Microsoft.Owin.Cors.dll
+C:\Immi\Personal\MyProjects\ffmeg\Immanuel.Ffmpeg\Immanuel.Ffmpeg\bin\System.Web.Cors.dll
+C:\Immi\Personal\MyProjects\ffmeg\Immanuel.Ffmpeg\Immanuel.Ffmpeg\bin\System.Web.Http.Cors.dll
+C:\Immi\Personal\MyProjects\ffmeg\Immanuel.Ffmpeg\Immanuel.Ffmpeg\bin\Microsoft.Owin.Cors.xml
+C:\Immi\Personal\MyProjects\ffmeg\Immanuel.Ffmpeg\Immanuel.Ffmpeg\bin\System.Web.Http.Cors.xml

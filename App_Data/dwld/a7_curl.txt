@@ -1,0 +1,15 @@
+﻿Unix Based: 
+curl \
+ -F "tofmt=wmv" \
+ -F "image=@/home/user1/Desktop/sample.webm" \
+ "http://video-converter.immanuel.co/api/File/Converter" \
+ --output "sample.wmv"
+
+
+windows: 
+curl 
+ -F "tofmt=wmv" 
+ -F "file=@C:\sample.webm" 
+ "http://video-converter.immanuel.co/api/File/Converter"
+ --output "sample.wmv"
+

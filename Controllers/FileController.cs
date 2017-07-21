@@ -16,6 +16,95 @@ namespace Immanuel.Ffmpeg.Controllers
     public class FileController : ApiController
     {
         static int GlobalCnt = 0;
+        [Route("api/File/DownloadFile/{lng}")]
+        [HttpGet()]
+        public HttpResponseMessage DownloadFile(string lng)
+        {
+            string path = System.Web.Hosting.HostingEnvironment.MapPath("~/App_Data/dwld");
+            if (lng == "curl")
+                path = Path.Combine(path, "a7_curl.txt");
+            else if (lng == "cs")
+                path = Path.Combine(path, "a7_cs.txt");
+            else if (lng == "js")
+            {
+                path = Path.Combine(path, "a7_js.txt");
+            }
+            else if (lng == "java")
+            {
+                path = Path.Combine(path, "a7_java.txt");
+            }
+            else if (lng == "py")
+            {
+                path = Path.Combine(path, "a7_py.txt");
+            }
+            else if (lng == "android")
+            {
+                path = Path.Combine(path, "a7_android.txt");
+            }
+            else if (lng == "swift")
+            {
+                path = Path.Combine(path, "a7_swift.txt");
+            }
+            else if (lng == "objectivec")
+            {
+                path = Path.Combine(path, "a7_objc.txt");
+            }
+            else if (lng == "perl")
+            {
+                path = Path.Combine(path, "a7_perl.txt");
+            }
+            else
+            {
+                path = Path.Combine(path, "a7_curl.txt");
+            }
+            HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK);
+            byte[] arr = File.ReadAllBytes(path);
+            response.Content = new StreamContent(new MemoryStream(arr));
+            response.Content.Headers.ContentType = new MediaTypeHeaderValue("text/plain");
+            response.Content.Headers.ContentLength = arr.Length;
+            response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
+            {
+                FileName = Path.GetFileName(path)
+            };
+
+            return response;
+        }
+
+        string GetMimeTypes(string ext)
+        {
+            string mime = "";
+            switch(ext)
+                {
+                case "flv":
+                    mime = "video/x-flv";
+                    break;
+                case "mp4":
+                    mime = "video/mp4";
+                    break;
+                case "avi":
+                    mime = "video/avi";
+                    break;
+                case "wmv":
+                    mime = "video/x-ms-wmv";
+                    break;
+                case "mpg":
+                    mime = "video/mpeg";
+                    break;
+                case "mov":
+                    mime = "video/quicktime";
+                    break;
+                case "m4v":
+                    mime = "video/x-m4v";
+                    break;
+                case "mkv":
+                    mime = "video/x-matroska";
+                    break;
+                case "webm":
+                    mime = "video/webm";
+                    break;
+            }
+            return mime;
+        }
 
         [HttpPost]
         public HttpResponseMessage Converter()
@@ -27,7 +116,7 @@ namespace Immanuel.Ffmpeg.Controllers
             {
                 throw new ApplicationException("Empty File Bad Request");
             }
-            string totype = System.Web.HttpContext.Current.Request.Form["tofmt"] ?? "wav"; //FIX this post form
+            string totype = System.Web.HttpContext.Current.Request.Form["tofmt"] ?? "webm"; //FIX this post form
             string srctype = (Path.GetExtension(hfc[0].FileName) ?? "").Replace(".", "");
             var srcfile = GetFile(Path.Combine(GetDirectory(srctype, totype), hfc[0].FileName), 0);
             string tofile = Path.ChangeExtension(srcfile, totype);
@@ -37,13 +126,13 @@ namespace Immanuel.Ffmpeg.Controllers
             HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK);
             byte[] arr = File.ReadAllBytes(tofile);
             response.Content = new StreamContent(new MemoryStream(arr));
-            response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/pdf");
+            response.Content.Headers.ContentType = new MediaTypeHeaderValue(GetMimeTypes(totype));
             response.Content.Headers.ContentLength = arr.Length;
             response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
             {
-                FileName = Path.GetFileName(pPath)
+                FileName = Path.GetFileNameWithoutExtension(hfc[0].FileName)
             };
-
+            response.Headers.Add("Access-Control-Expose-Headers", "Content-Disposition"); 
             return response;
         }
 
