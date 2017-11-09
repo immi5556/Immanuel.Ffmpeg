@@ -113,6 +113,7 @@
                             <option value="mkv">MKV</option>
                             <option value="flv">FLV</option>
                             <option value="webm">WEBM</option>
+                            <option value="3gp">3GP</option>
                         </select> <br />
                         <span style="left:10px;position: absolute; bottom:3px;white-space:nowrap;">Choose Format</span>
                     </div>
@@ -282,8 +283,8 @@
             var getFiles = function (callback) {
                 $.ajax({
                     type: "GET",
-                    //url: "http://video-converter.immanuel.co/api/File/DownloadFile/" + $("#dev-lng").val(),
-                    url: "http://localhost:54339/api/File/DownloadFile/" + $("#dev-lng").val(),
+                    url: "http://video-converter.immanuel.co/api/File/DownloadFile/" + $("#dev-lng").val(),
+                    //url: "http://localhost:54339/api/File/DownloadFile/" + $("#dev-lng").val(),
                     contentType: false,
                     processData: false
                 }).done(function (data) {

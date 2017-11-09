@@ -17,3 +17,5 @@ obj/
 *.dll
 *.dll
 *.dll
+*.pdb
+*.dll

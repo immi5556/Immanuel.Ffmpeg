@@ -102,6 +102,9 @@ namespace Immanuel.Ffmpeg.Controllers
                 case "webm":
                     mime = "video/webm";
                     break;
+                case "3gp":
+                    mime = "video/3gpp";
+                    break;
             }
             return mime;
         }
@@ -403,6 +406,9 @@ namespace Immanuel.Ffmpeg.Controllers
             //webm to WAV
             else if (stype.ToLower() == "webm" && ttype.ToLower() == "wav")
                 args = "-i \"" + srcfile + "\" -acodec pcm_s16le -ac 2 \"" + tofile + "\"";
+            //3gp to mp4
+            else if (stype.ToLower() == "3gp" && ttype.ToLower() == "mp4")
+                args = "-i \"" + srcfile + "\" -ab 64k -ar 44100 \"" + tofile + "\"";
             return args;
         }
     }
