@@ -12,7 +12,7 @@ private static void ConvertVideo(File file, String filename, String toType) {
 
 	URL url = null;
 	try {
-		url = new URL("http://video-converter.immanuel.co/api/File/Converter");
+		url = new URL("https://video-converter.immanuel.co/api/File/Converter");
 	} catch (MalformedURLException e3) {
 		// TODO Auto-generated catch block
 		e3.printStackTrace();

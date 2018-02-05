@@ -11,7 +11,7 @@ private static byte[] ConvertVideo(byte[] file, string filename, string toType)
     {
         formData.Add(new StringContent(toType), "tofmt");
         formData.Add(bytesContent, "file", filename);
-        var response = client.PostAsync(@"http://video-converter.immanuel.co/api/File/Converter", formData).Result;
+        var response = client.PostAsync(@"https://video-converter.immanuel.co/api/File/Converter", formData).Result;
         if (!response.IsSuccessStatusCode)
             return null;
         byte[] arr;

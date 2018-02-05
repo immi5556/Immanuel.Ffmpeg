@@ -15,7 +15,7 @@ var a7 = (function () {
                 saveData(this.response, fname, type, )
             }
         };
-        request.open('POST', 'http://video-converter.immanuel.co/api/File/Converter');
+        request.open('POST', 'https://video-converter.immanuel.co/api/File/Converter');
         request.responseType = 'arraybuffer';
         request.send(formData);
     }

@@ -2,8 +2,8 @@
 	curl \
 		-F "tofmt=wav" \
 		-F "image=@@/home/user1/Desktop/sample.webm.jpg" \
-		"http://video-converter.immanuel.co/api/File/Converter"
+		"https://video-converter.immanuel.co/api/File/Converter"
 
 
-windows: curl -F "tofmt=wav" -F "file=@@C:\Immi\Personal\MyProjects\ffmeg\Immanuel.Ffmpeg\Immanuel.Ffmpeg\App_Data\ffmpeg\sample.webm" "http://video-converter.immanuel.co/api/File/Converter"
+windows: curl -F "tofmt=wav" -F "file=@@C:\Immi\Personal\MyProjects\ffmeg\Immanuel.Ffmpeg\Immanuel.Ffmpeg\App_Data\ffmpeg\sample.webm" "https://video-converter.immanuel.co/api/File/Converter"
 
