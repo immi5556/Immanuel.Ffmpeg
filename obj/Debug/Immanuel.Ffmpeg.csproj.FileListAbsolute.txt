@@ -87,4 +87,6 @@ C:\Immi\Personal\MyProjects\ffmeg\Immanuel.Ffmpeg\Immanuel.Ffmpeg\bin\Microsoft.
 C:\Immi\Personal\MyProjects\ffmeg\Immanuel.Ffmpeg\Immanuel.Ffmpeg\bin\Microsoft.AI.Web.xml
 C:\Immi\Personal\MyProjects\ffmeg\Immanuel.Ffmpeg\Immanuel.Ffmpeg\obj\Debug\Immanuel.Ffmpeg.dll
 C:\Immi\Personal\MyProjects\ffmeg\Immanuel.Ffmpeg\Immanuel.Ffmpeg\obj\Debug\Immanuel.Ffmpeg.pdb
-C:\Immi\Personal\MyProjects\ffmeg\Immanuel.Ffmpeg\Immanuel.Ffmpeg\obj\Debug\Immanuel.Ffmpeg.csprojResolveAssemblyReference.cache
+C:\Immi\Personal\MyProjects\ffmeg\Immanuel.Ffmpeg\Immanuel.Ffmpeg\obj\Debug\Immanuel.Ffmpeg.csprojAssemblyReference.cache
+C:\Immi\Personal\MyProjects\ffmeg\Immanuel.Ffmpeg\Immanuel.Ffmpeg\obj\Debug\Immanuel.Ffmpeg.csproj.CoreCompileInputs.cache
+C:\Immi\Personal\MyProjects\ffmeg\Immanuel.Ffmpeg\Immanuel.Ffmpeg\obj\Debug\Immanuel.Ffmpeg.csproj.CopyComplete

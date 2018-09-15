@@ -15,6 +15,17 @@ namespace Immanuel.Ffmpeg.Controllers
 {
     public class FileController : ApiController
     {
+        async void CountIncrement()
+        {
+            //actOnValue('piiofpr9', 'VisitCnt', 'increment');
+            using (var client = new HttpClient())
+            {
+                var response = await client.PostAsync(
+                    "https://keyvalue.immanuel.co/api/KeyVal/ActOnValue/piiofpr9/VisitCnt/increment",
+                     new StringContent(""));
+            }
+        }
+
         static int GlobalCnt = 0;
         [Route("api/File/DownloadFile/{lng}")]
         [HttpGet()]
@@ -112,6 +123,7 @@ namespace Immanuel.Ffmpeg.Controllers
         [HttpPost]
         public HttpResponseMessage Converter()
         {
+            CountIncrement();
             ++GlobalCnt;
             string pPath = System.Web.Hosting.HostingEnvironment.MapPath("~/App_Data/Temp");
             System.Web.HttpFileCollection hfc = System.Web.HttpContext.Current.Request.Files;
@@ -142,6 +154,7 @@ namespace Immanuel.Ffmpeg.Controllers
         [HttpPost]
         public HttpResponseMessage ConvertToVids()
         {
+            CountIncrement();
             ++GlobalCnt;
             string pPath = System.Web.Hosting.HostingEnvironment.MapPath("~/App_Data/Temp");
             System.Web.HttpFileCollection hfc = System.Web.HttpContext.Current.Request.Files;

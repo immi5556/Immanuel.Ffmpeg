@@ -36,7 +36,7 @@
                 js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.9";
                 fjs.parentNode.insertBefore(js, fjs);
             }(document, 'script', 'facebook-jssdk'));</script>
-        <div class="fb-share-button" data-href="http://video-converter.immanuel.co/home/converter" data-layout="box_count" data-size="large" data-mobile-iframe="true"><a class="fb-xfbml-parse-ignore" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Fvideo-converter.immanuel.co%2Fhome%2Fconverter&amp;src=sdkpreparse">Share</a></div>
+        <div class="fb-share-button" data-href="https://video-converter.immanuel.co/home/converter" data-layout="box_count" data-size="large" data-mobile-iframe="true"><a class="fb-xfbml-parse-ignore" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Fvideo-converter.immanuel.co%2Fhome%2Fconverter&amp;src=sdkpreparse">Share</a></div>
     </div>
     <div style="position:absolute;right:0px;top:0px;">
         <div id="google_translate_element"></div>
@@ -219,7 +219,7 @@
             var getValue = function (appkey, itemkey) {
                 $.ajax({
                     type: "GET",
-                    url: "http://keyvalue.immanuel.co/api/KeyVal/GetValue/" + appkey + "/" + itemkey,
+                    url: "https://keyvalue.immanuel.co/api/KeyVal/GetValue/" + appkey + "/" + itemkey,
                     contentType: false,
                     processData: false
                 }).done(function (data) {
@@ -231,7 +231,7 @@
             var updateValue = function (appkey, itemkey, itemval) {
                 $.ajax({
                     type: "POST",
-                    url: "http://keyvalue.immanuel.co/api/KeyVal/UpdateValue/" + appkey + "/" + itemkey + "/" + itemval,
+                    url: "https://keyvalue.immanuel.co/api/KeyVal/UpdateValue/" + appkey + "/" + itemkey + "/" + itemval,
                     contentType: false,
                     processData: false
                 }).done(function (data) {
@@ -243,7 +243,7 @@
             var actOnValue = function (appkey, itemkey, action) {
                 $.ajax({
                     type: "POST",
-                    url: "http://keyvalue.immanuel.co/api/KeyVal/ActOnValue/" + appkey + "/" + itemkey + "/" + action,
+                    url: "https://keyvalue.immanuel.co/api/KeyVal/ActOnValue/" + appkey + "/" + itemkey + "/" + action,
                     contentType: false,
                     processData: false
                 }).done(function (data) {
@@ -283,7 +283,7 @@
             var getFiles = function (callback) {
                 $.ajax({
                     type: "GET",
-                    url: "http://video-converter.immanuel.co/api/File/DownloadFile/" + $("#dev-lng").val(),
+                    url: "https://video-converter.immanuel.co/api/File/DownloadFile/" + $("#dev-lng").val(),
                     //url: "http://localhost:54339/api/File/DownloadFile/" + $("#dev-lng").val(),
                     contentType: false,
                     processData: false
@@ -328,7 +328,7 @@
                             saveData(this.response, fname, type, )
                         }
                     };
-                    request.open('POST', 'http://video-converter.immanuel.co/api/File/Converter');
+                    request.open('POST', 'https://video-converter.immanuel.co/api/File/Converter');
                     request.responseType = 'arraybuffer';
                     request.send(formData);
                 }
