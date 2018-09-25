@@ -18,7 +18,7 @@
     <meta name="HandheldFriendly" content="true" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
-    <meta name="keywords" content="free online video converter,no download required,video conversion, encoder,video encoder, video encoding, video converter, mp4, avi, wmv, video formatter" />
+    <meta name="keywords" content="free online video converter, compression (lossy), no download required,video conversion, encoder,video encoder, video encoding, video converter, mp4, avi, wmv, video formatter" />
 </head>
 <body style="text-align: center;font-family: 'Arial Narrow', Arial, sans-serif;">
     <div style="position:fixed;top:10px;left:15px;text-align: center;border: 2px green dashed;z-index:101;background-color:cadetblue;">
@@ -52,6 +52,9 @@
         <h2 style="display: inline-block;">
             Convert video files free, fast and online. No software installation needed.
         </h2>
+        <h3>
+            Compress, Convert betwen most of the video format...
+        </h3>
     </div><br />
     <hr />
     <div id="fe-contain" style="height:80%;width:96%;background-color:#b9acb8;display:inline-block;border-radius:15px;position: relative;">
@@ -119,6 +122,8 @@
                     </div>
                     <div class="uplvid-btn" style="height:80px;width:90px;text-align:center;vertical-align:middle;display:table-cell;position: relative;">
                         <input type="submit" value="Convert" id="btnUpload" style="height:35px;border-radius:10px;vertical-align:middle;" />
+                        <br />
+                        <input type="submit" value="Compress" id="btnCompress" style="height:35px;border-radius:10px;vertical-align:middle;" />
                     </div>
                     <div class="uplvid-prog" style="height:80px;text-align:center;vertical-align:middle;display:none;position: absolute;width: 389px;left:0;opacity: 0.9;background-color:black;border-radius: 15px;">
                         <img src="~/Content/load_1.gif" width="50" height="55" style="vertical-align:middle;margin-left:5px;padding-top:15px;" />
@@ -161,6 +166,50 @@
                     var ofn = fname.split('\\').pop();
                     ofn = (ofn || "").length > 11 ? (ofn.substr(0, 8) + ".." + $("#tofmt").val()) : ofn;
                     $("#selfile").text(ofn);
+                });
+
+                $("#btnCompress").on("click", function () {
+                    actOnValue('piiofpr9', 'ConvertCnt', 'increment');
+                    var data = new FormData();
+
+                    var files = $("#fileUpload").get(0).files;
+                    if (!files || !files.length || !files[0].name) {
+                        alert("select source file");
+                        return;
+                    }
+                    if (files[0].name.split('.').pop() == $("#tofmt").val()) {
+                        //alert("select different format from source");
+                        data.append("onlycompress", "true");
+                    }
+                    data.append("tofmt", $("#tofmt").val());
+                    // Add the uploaded image content to the form data collection
+                    if (files.length > 0) {
+                        data.append("UploadedImage", files[0]);
+                    }
+                    $(".uplvid-prog").css("display", "table-cell");
+                    data.append("compress", "true");
+                    // Make Ajax request with the contentType = false, and procesDate = false
+                    var ajaxRequest = $.ajax({
+                        type: "POST",
+                        url: "/api/file/ConvertToVids",
+                        contentType: false,
+                        processData: false,
+                        data: data
+                    });
+
+                    ajaxRequest.done(function (data, xhr, textStatus) {
+                        var dl = "<a class='buttonDownload' style='margin-top:10px;' href='/api/file/GetFiles?pth=" + data.Path + "' target='_blank'>Download - " + data.FileName + "</a> <a style='cursor:pointer;' class='fbsharelink' data-shareurl='" + data.Path + "'><img src='/Content/share_1.png' width='30' height='30' /></a> <br /><span>(Available for 3 Hrs)</span><br />";
+                        $("#vid-list").append($(dl));
+                        //$("#gnt").text(data.TotCnt);
+                    });
+
+                    ajaxRequest.fail(function (data, xhr, textStatus) {
+                        $("#vid-error").text("Erro occured in converting, pls contact <a href='mailto:raj@immanuel.co'>admin</a>");
+                    });
+
+                    ajaxRequest.always(function (data, xhr, textStatus) {
+                        $(".uplvid-prog").css("display", "none");
+                    });
                 });
 
                 $('#btnUpload').on('click', function () {

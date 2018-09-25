@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
 
@@ -84,8 +85,8 @@ namespace Immanuel.Ffmpeg.Controllers
         string GetMimeTypes(string ext)
         {
             string mime = "";
-            switch(ext)
-                {
+            switch (ext)
+            {
                 case "flv":
                     mime = "video/x-flv";
                     break;
@@ -121,6 +122,75 @@ namespace Immanuel.Ffmpeg.Controllers
         }
 
         [HttpPost]
+        public HttpResponseMessage Compress()
+        {
+            CountIncrement();
+            ++GlobalCnt;
+            string pPath = System.Web.Hosting.HostingEnvironment.MapPath("~/App_Data/Temp");
+            System.Web.HttpFileCollection hfc = System.Web.HttpContext.Current.Request.Files;
+            if (hfc.Count < 1)
+            {
+                throw new ApplicationException("Empty File Bad Request");
+            }
+            string totype = System.Web.HttpContext.Current.Request.Form["tofmt"] ?? "compress";
+            string srctype = (Path.GetExtension(hfc[0].FileName) ?? "").Replace(".", "");
+            var srcfile = GetFile(Path.Combine(GetDirectory(srctype, totype), hfc[0].FileName), 0);
+            //string tofile = Path.ChangeExtension(srcfile, totype);
+            hfc[0].SaveAs(srcfile);
+            string convertedfile = srcfile;
+            string convertedcompressdfile = Path.Combine(Path.GetDirectoryName(convertedfile), Path.GetFileNameWithoutExtension(convertedfile) + "_comp" + Path.GetExtension(convertedfile));
+            //ffmpeg -i vid_big.mp4 -vcodec h264 -acodec aac vb_output.mp4 // Works great
+            //ProcessExecute("-i \"" + convertedfile + "\" -vcodec h264 -acodec aac \"" + convertedcompressdfile + "\"");
+            //ffmpeg -i vid_big.mp4 -vcodec h264 -b:v 1000k -acodec mp2 vid_big_t1.mp4 // Works Great 30mb to 3mb (Quality is good) - reducing 100k to 400k reduces to 30mb to 1.7mb (Qulaity is compromised)
+            ProcessExecute("-i \"" + convertedfile + "\" -vcodec h264 -b:v 1000k -acodec mp2 \"" + convertedcompressdfile + "\"");
+            HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK);
+            byte[] arr = File.ReadAllBytes(convertedcompressdfile);
+            response.Content = new StreamContent(new MemoryStream(arr));
+            response.Content.Headers.ContentType = new MediaTypeHeaderValue(GetMimeTypes(totype));
+            response.Content.Headers.ContentLength = arr.Length;
+            response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
+            {
+                FileName = Path.GetFileNameWithoutExtension(hfc[0].FileName)
+            };
+            response.Headers.Add("Access-Control-Expose-Headers", "Content-Disposition");
+            return response;
+        }
+
+        [HttpPost]
+        public HttpResponseMessage ConverterAndCompress()
+        {
+            CountIncrement();
+            ++GlobalCnt;
+            string pPath = System.Web.Hosting.HostingEnvironment.MapPath("~/App_Data/Temp");
+            System.Web.HttpFileCollection hfc = System.Web.HttpContext.Current.Request.Files;
+            if (hfc.Count < 1)
+            {
+                throw new ApplicationException("Empty File Bad Request");
+            }
+            string totype = System.Web.HttpContext.Current.Request.Form["tofmt"] ?? "webm"; //FIX this post form
+            string srctype = (Path.GetExtension(hfc[0].FileName) ?? "").Replace(".", "");
+            var srcfile = GetFile(Path.Combine(GetDirectory(srctype, totype), hfc[0].FileName), 0);
+            string tofile = Path.ChangeExtension(srcfile, totype);
+            hfc[0].SaveAs(srcfile);
+            string args = GetArgs(srcfile, tofile, srctype, totype);
+            ProcessExecute(args);
+            string convertedfile = tofile;
+            string convertedcompressdfile = Path.Combine(Path.GetDirectoryName(convertedfile), Path.GetFileNameWithoutExtension(convertedfile) + "_comp" + Path.GetExtension(convertedfile));
+            ProcessExecute("-i \"" + convertedfile + "\" -vcodec h264 -acodec aac \"" + convertedcompressdfile + "\"");
+            HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK);
+            byte[] arr = File.ReadAllBytes(convertedcompressdfile);
+            response.Content = new StreamContent(new MemoryStream(arr));
+            response.Content.Headers.ContentType = new MediaTypeHeaderValue(GetMimeTypes(totype));
+            response.Content.Headers.ContentLength = arr.Length;
+            response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
+            {
+                FileName = Path.GetFileNameWithoutExtension(hfc[0].FileName)
+            };
+            response.Headers.Add("Access-Control-Expose-Headers", "Content-Disposition");
+            return response;
+        }
+
+        [HttpPost]
         public HttpResponseMessage Converter()
         {
             CountIncrement();
@@ -147,7 +217,7 @@ namespace Immanuel.Ffmpeg.Controllers
             {
                 FileName = Path.GetFileNameWithoutExtension(hfc[0].FileName)
             };
-            response.Headers.Add("Access-Control-Expose-Headers", "Content-Disposition"); 
+            response.Headers.Add("Access-Control-Expose-Headers", "Content-Disposition");
             return response;
         }
 
@@ -162,13 +232,29 @@ namespace Immanuel.Ffmpeg.Controllers
             {
                 throw new ApplicationException("Empty File Bad Request");
             }
+            bool compress = System.Web.HttpContext.Current.Request.Form["compress"] == null ? false : Convert.ToBoolean(System.Web.HttpContext.Current.Request.Form["compress"]);
+            bool onlycompress = System.Web.HttpContext.Current.Request.Form["onlycompress"] == null ? false : Convert.ToBoolean(System.Web.HttpContext.Current.Request.Form["onlycompress"]);
             string totype = System.Web.HttpContext.Current.Request.Form["tofmt"];
             string srctype = (Path.GetExtension(hfc[0].FileName) ?? "").Replace(".", "");
             var srcfile = GetFile(Path.Combine(GetDirectory(srctype, totype), hfc[0].FileName), 0);
             string tofile = Path.ChangeExtension(srcfile, totype);
             hfc[0].SaveAs(srcfile);
-            string args = GetArgs(srcfile, tofile, srctype, totype);
-            ProcessExecute(args);
+            string convertedfile = "";
+            if (!onlycompress)
+            {
+                string args = GetArgs(srcfile, tofile, srctype, totype);
+                ProcessExecute(args);
+                convertedfile = tofile;
+            } 
+            else
+            {
+                convertedfile = srcfile;
+            }
+            if (compress)
+            {
+                string convertedcompressdfile = Path.Combine(Path.GetDirectoryName(convertedfile), Path.GetFileNameWithoutExtension(convertedfile) + "_comp" + Path.GetExtension(convertedfile));
+                ProcessExecute("-i \"" + convertedfile + "\" -vcodec h264 -b:v 1000k -acodec mp2 \"" + convertedcompressdfile + "\"");
+            }
             var datedir = Path.GetFileName(Path.GetDirectoryName(Path.GetDirectoryName(tofile)));
             var tt = System.Web.HttpUtility.UrlEncode(@"~/App_data/Temp/" + datedir + @"/" + srctype + "_" + totype + @"/" + Path.GetFileName(tofile));
             return new HttpResponseMessage()
@@ -211,7 +297,7 @@ namespace Immanuel.Ffmpeg.Controllers
             return response;
         }
 
-        string GetDirectory(string srctype,string totype)
+        string GetDirectory(string srctype, string totype)
         {
             string path = System.Web.Hosting.HostingEnvironment.MapPath("~/App_Data/Temp");
             string tdir = (DateTime.Now.Year.ToString() + "_" + DateTime.Now.Month.ToString() + "_" + DateTime.Now.Day.ToString());
